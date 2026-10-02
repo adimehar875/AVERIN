@@ -355,19 +355,108 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            background: #25d366;
+            background: var(--accent-gold);
             color: #000;
-            text-decoration: none;
+            border: none;
             padding: 14px;
             border-radius: 12px;
             font-size: 15px;
             font-weight: 700;
+            cursor: pointer;
             transition: 0.3s;
         }
 
         .modal-order-btn:hover {
-            background: #20ba5a;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            background: #c29d2e;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Checkout Form Modal Specifics */
+        .checkout-modal-content {
+            display: block;
+            max-width: 500px;
+        }
+
+        .checkout-summary {
+            background: #20232a;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-gold);
+        }
+
+        .checkout-summary h4 {
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .checkout-summary p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 11px;
+            background: #20232a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .readonly-field {
+            background: #14161b !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed;
+        }
+
+        .submit-order-btn {
+            width: 100%;
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-order-btn:hover {
+            background: #c29d2e;
+        }
+
+        .success-banner {
+            display: none;
+            background: #103926;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 15px;
+            border: 1px solid #166534;
         }
 
         /* Responsive Styles */
@@ -427,7 +516,7 @@
             <ul id="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#services">Collection</a></li>
-                <li><a href="https://wa.me/923420604105" target="_blank">Contact</a></li>
+                <li><a href="#services">Contact</a></li>
             </ul>
         </nav>
         <div class="menu-toggle" id="mobile-menu">
@@ -473,18 +562,18 @@
             </div>
 
             <!-- Item 3 -->
-          <div class="product-card" onclick="openModal('Ferrari Racing Jacket', 'Rs. 2,999', 'Modern fit premium Scuderia Ferrari racing jacket with windproof layer.', 'Ferrari-jacket.jpg.jpg')">
-    <div class="img-wrapper">
-        <img src="Ferrari-jacket.jpg.jpg" alt="Ferrari Racing Jacket">
-        <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
-    </div>
-    <div class="product-details">
-        <h3 class="product-title">Ferrari Racing Jacket</h3>
-        <p class="product-desc">Modern fit racing jacket.</p>
-        <div class="price-tag">Rs. 2,999</div>
-        <button class="quick-btn">View Details</button>
-    </div>
-</div>
+            <div class="product-card" onclick="openModal('Ferrari Racing Jacket', 'Rs. 2,999', 'Modern fit premium Scuderia Ferrari racing jacket with windproof layer.', 'Ferrari-jacket.jpg.jpg')">
+                <div class="img-wrapper">
+                    <img src="Ferrari-jacket.jpg.jpg" alt="Ferrari Racing Jacket">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">Ferrari Racing Jacket</h3>
+                    <p class="product-desc">Modern fit racing jacket.</p>
+                    <div class="price-tag">Rs. 2,999</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
+            </div>
 
             <!-- Item 4 -->
             <div class="product-card" onclick="openModal('Executive Hoodie', 'Rs. 2,500', 'Heavyweight fleece fabric hoodie with executive finish.', 'hoodie3.jpeg.jpeg')">
@@ -545,9 +634,64 @@
                     </div>
                 </div>
 
-                <a href="#" id="modalWhatsappBtn" target="_blank" class="modal-order-btn">
-                    <i class="fab fa-whatsapp"></i> Order on WhatsApp
-                </a>
+                <button class="modal-order-btn" onclick="goToCheckout()">
+                    <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal Form -->
+    <div class="modal-overlay" id="checkoutModal" onclick="closeCheckoutOnOverlay(event)">
+        <div class="modal-content checkout-modal-content">
+            <span class="close-modal" onclick="closeCheckoutModal()">&times;</span>
+            <h2 style="margin-bottom: 15px; font-size: 22px;">Complete Order</h2>
+
+            <div class="checkout-summary">
+                <h4 id="summaryTitle">Product Name</h4>
+                <p><span id="summaryPrice">Rs. 0</span> | Size: <strong id="summarySize" style="color: var(--accent-gold);">M</strong></p>
+            </div>
+
+            <form id="orderForm">
+                <input type="hidden" name="access_key" value="08a96389-3986-456b-90b7-eb53c965ecfb">
+                <input type="hidden" name="subject" value="New Order Received - AVERIN Store">
+                <input type="hidden" name="from_name" value="AVERIN Checkout">
+
+                <!-- Order Info Hidden -->
+                <input type="hidden" name="Product Name" id="formProductName">
+                <input type="hidden" name="Price" id="formProductPrice">
+                <input type="hidden" name="Selected Size" id="formProductSize">
+
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="Customer Name" placeholder="e.g. Ali Ahmad" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone / WhatsApp Number *</label>
+                    <input type="tel" name="Phone Number" placeholder="03001234567" required>
+                </div>
+
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" name="City" placeholder="e.g. Lahore" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Complete Delivery Address *</label>
+                    <textarea name="Delivery Address" rows="3" placeholder="House #, Street #, Area..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <input type="text" name="Payment Method" value="Cash on Delivery (COD)" readonly class="readonly-field">
+                </div>
+
+                <button type="submit" class="submit-order-btn" id="submitBtn">Confirm & Place Order</button>
+            </form>
+
+            <div id="successBanner" class="success-banner">
+                🎉 Thank you! Your order has been placed successfully. We will contact you shortly!
             </div>
         </div>
     </div>
@@ -557,24 +701,28 @@
         const mobileMenu = document.getElementById('mobile-menu');
         const navLinks = document.getElementById('nav-links');
         let selectedSize = 'M';
+        let currentTitle = '';
+        let currentPrice = '';
 
         mobileMenu.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
 
-        // Open Modal Function
+        // Open Product Modal Function
         function openModal(title, price, desc, imgSrc) {
+            currentTitle = title;
+            currentPrice = price;
+            
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalPrice').innerText = price;
             document.getElementById('modalDesc').innerText = desc;
             document.getElementById('modalImg').src = imgSrc;
             
-            updateWhatsappLink(title, price, selectedSize);
             document.getElementById('productModal').classList.add('active');
-            document.body.style.overflow = 'hidden'; // Stop background scroll
+            document.body.style.overflow = 'hidden';
         }
 
-        // Close Modal
+        // Close Product Modal
         function closeModal() {
             document.getElementById('productModal').classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -592,20 +740,80 @@
             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedSize = btn.innerText;
-
-            const title = document.getElementById('modalTitle').innerText;
-            const price = document.getElementById('modalPrice').innerText;
-            updateWhatsappLink(title, price, selectedSize);
         }
 
-        // Update WhatsApp Link with size
-        function updateWhatsappLink(title, price, size) {
-            const btn = document.getElementById('modalWhatsappBtn');
-            const message = `Hi, I want to order the ${title} (${price}) in Size: ${size}.`;
-            btn.href = `https://wa.me/923420604105?text=${encodeURIComponent(message)}`;
+        // Switch to Checkout Modal
+        function goToCheckout() {
+            closeModal();
+
+            document.getElementById('summaryTitle').innerText = currentTitle;
+            document.getElementById('summaryPrice').innerText = currentPrice;
+            document.getElementById('summarySize').innerText = selectedSize;
+
+            document.getElementById('formProductName').value = currentTitle;
+            document.getElementById('formProductPrice').value = currentPrice;
+            document.getElementById('formProductSize').value = selectedSize;
+
+            document.getElementById('checkoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Zoom Effect Functionality
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeCheckoutOnOverlay(e) {
+            if(e.target.id === 'checkoutModal') {
+                closeCheckoutModal();
+            }
+        }
+
+        // Web3Forms Order Submit via AJAX
+        const orderForm = document.getElementById('orderForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successBanner = document.getElementById('successBanner');
+
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            submitBtn.innerText = 'Placing Order...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(orderForm);
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    orderForm.reset();
+                    orderForm.style.display = 'none';
+                    successBanner.style.display = 'block';
+
+                    setTimeout(() => {
+                        closeCheckoutModal();
+                        orderForm.style.display = 'block';
+                        successBanner.style.display = 'none';
+                        submitBtn.innerText = 'Confirm & Place Order';
+                        submitBtn.disabled = false;
+                    }, 4000);
+                } else {
+                    alert('Order process mein koi issue aaya, dubara try karein.');
+                    submitBtn.innerText = 'Confirm & Place Order';
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('Connection error. Apna internet check karke dobara try karein.');
+                submitBtn.innerText = 'Confirm & Place Order';
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Zoom Effect
         function zoomImage(e) {
             const container = document.getElementById('zoomContainer');
             const img = document.getElementById('modalImg');
@@ -626,9 +834,6 @@
             img.style.transform = "scale(1)";
             img.style.transformOrigin = "center center";
         }
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
