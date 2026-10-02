@@ -316,11 +316,11 @@
         }
 
         /* Size Selector */
-        .size-selection {
-            margin-bottom: 20px;
+        .size-selection, .color-selection {
+            margin-bottom: 18px;
         }
 
-        .size-selection label {
+        .size-selection label, .color-selection label {
             display: block;
             font-size: 13px;
             color: var(--text-muted);
@@ -349,6 +349,29 @@
             color: var(--accent-gold);
         }
 
+        /* Color Swatches (Dots) */
+        .color-options {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-dot:hover, .color-dot.active {
+            transform: scale(1.15);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
         .modal-order-btn {
             display: flex;
             align-items: center;
@@ -364,6 +387,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
+            margin-top: 10px;
         }
 
         .modal-order-btn:hover {
@@ -533,6 +557,24 @@
 
         <div class="product-grid">
             
+            <!-- New T-Shirt Item with Color Swatches -->
+            <div class="product-card" onclick="openModal('Casual Cotton T-Shirt', 'Rs. 1,500', 'Premium soft cotton fit t-shirt available in multiple vibrant colors.', 'T-shirt.green.jpg.jpeg', [
+                { colorName: 'Green', colorCode: '#2e7d32', img: 'T-shirt.green.jpg.jpeg' },
+                { colorName: 'Black', colorCode: '#111111', img: 'T-shirt.black.jpg.jpeg' },
+                { colorName: 'White', colorCode: '#ffffff', img: 'T-shirt.white.jpg.jpeg' }
+            ])">
+                <div class="img-wrapper">
+                    <img src="T-shirt.green.jpg.jpeg" alt="Casual Cotton T-Shirt">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
+                </div>
+                <div class="product-details">
+                    <h3 class="product-title">Casual Cotton T-Shirt</h3>
+                    <p class="product-desc">Available in 3 Colors (Green, Black, White)</p>
+                    <div class="price-tag">Rs. 1,500</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
+            </div>
+
             <!-- Item 1 -->
             <div class="product-card" onclick="openModal('Premium Hoodie', 'Rs. 1,799', 'Comfortable and stylish everyday wear crafted from premium fleece fabric.', 'hoodie1.jpg.jpeg')">
                 <div class="img-wrapper">
@@ -623,6 +665,12 @@
                 <div class="modal-price" id="modalPrice">Rs. 0</div>
                 <p class="modal-desc" id="modalDesc">Description goes here...</p>
 
+                <!-- Color Selection Swatches -->
+                <div class="color-selection" id="colorSelectionContainer" style="display: none;">
+                    <label>Select Color: <strong id="selectedColorName" style="color: var(--accent-gold);">Green</strong></label>
+                    <div class="color-options" id="colorOptions"></div>
+                </div>
+
                 <!-- Select Size -->
                 <div class="size-selection">
                     <label>Select Size:</label>
@@ -630,7 +678,6 @@
                         <button class="size-btn" onclick="selectSize(this)">S</button>
                         <button class="size-btn active" onclick="selectSize(this)">M</button>
                         <button class="size-btn" onclick="selectSize(this)">L</button>
-                        <button class="size-btn" onclick="selectSize(this)">XL</button>
                     </div>
                 </div>
 
@@ -649,7 +696,7 @@
 
             <div class="checkout-summary">
                 <h4 id="summaryTitle">Product Name</h4>
-                <p><span id="summaryPrice">Rs. 0</span> | Size: <strong id="summarySize" style="color: var(--accent-gold);">M</strong></p>
+                <p><span id="summaryPrice">Rs. 0</span> | Size: <strong id="summarySize" style="color: var(--accent-gold);">M</strong> <span id="summaryColorWrapper">| Color: <strong id="summaryColor" style="color: var(--accent-gold);">-</strong></span></p>
             </div>
 
             <form id="orderForm">
@@ -661,6 +708,7 @@
                 <input type="hidden" name="Product Name" id="formProductName">
                 <input type="hidden" name="Price" id="formProductPrice">
                 <input type="hidden" name="Selected Size" id="formProductSize">
+                <input type="hidden" name="Selected Color" id="formProductColor">
 
                 <div class="form-group">
                     <label>Full Name *</label>
@@ -701,6 +749,7 @@
         const mobileMenu = document.getElementById('mobile-menu');
         const navLinks = document.getElementById('nav-links');
         let selectedSize = 'M';
+        let selectedColor = '';
         let currentTitle = '';
         let currentPrice = '';
 
@@ -709,7 +758,7 @@
         });
 
         // Open Product Modal Function
-        function openModal(title, price, desc, imgSrc) {
+        function openModal(title, price, desc, imgSrc, colorVariants = null) {
             currentTitle = title;
             currentPrice = price;
             
@@ -717,6 +766,36 @@
             document.getElementById('modalPrice').innerText = price;
             document.getElementById('modalDesc').innerText = desc;
             document.getElementById('modalImg').src = imgSrc;
+
+            const colorContainer = document.getElementById('colorSelectionContainer');
+            const colorOptionsDiv = document.getElementById('colorOptions');
+            colorOptionsDiv.innerHTML = '';
+
+            if (colorVariants && colorVariants.length > 0) {
+                colorContainer.style.display = 'block';
+                selectedColor = colorVariants[0].colorName;
+                document.getElementById('selectedColorName').innerText = selectedColor;
+
+                colorVariants.forEach((variant, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = `color-dot ${index === 0 ? 'active' : ''}`;
+                    dot.style.backgroundColor = variant.colorCode;
+                    if(variant.colorCode.toLowerCase() === '#ffffff') {
+                        dot.style.border = '1px solid #666';
+                    }
+                    dot.onclick = () => {
+                        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                        dot.classList.add('active');
+                        document.getElementById('modalImg').src = variant.img;
+                        selectedColor = variant.colorName;
+                        document.getElementById('selectedColorName').innerText = selectedColor;
+                    };
+                    colorOptionsDiv.appendChild(dot);
+                });
+            } else {
+                colorContainer.style.display = 'none';
+                selectedColor = 'N/A';
+            }
             
             document.getElementById('productModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -750,9 +829,17 @@
             document.getElementById('summaryPrice').innerText = currentPrice;
             document.getElementById('summarySize').innerText = selectedSize;
 
+            if(selectedColor !== 'N/A') {
+                document.getElementById('summaryColorWrapper').style.display = 'inline';
+                document.getElementById('summaryColor').innerText = selectedColor;
+            } else {
+                document.getElementById('summaryColorWrapper').style.display = 'none';
+            }
+
             document.getElementById('formProductName').value = currentTitle;
             document.getElementById('formProductPrice').value = currentPrice;
             document.getElementById('formProductSize').value = selectedSize;
+            document.getElementById('formProductColor').value = selectedColor;
 
             document.getElementById('checkoutModal').classList.add('active');
             document.body.style.overflow = 'hidden';
