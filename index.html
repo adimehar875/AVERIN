@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AVERIN | Exclusive Menswear</title>
-    <!-- Google Fonts (Plus Jakarta Sans for Premium Feel) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Modern CSS Reset & Variables */
         :root {
             --bg-color: #0f1115;
             --card-bg: #181a20;
             --accent-gold: #d4af37;
-            --accent-hover: #f3ca40;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: rgba(255, 255, 255, 0.08);
@@ -35,7 +33,7 @@
             line-height: 1.6;
         }
 
-        /* Premium Glass Header */
+        /* Header */
         header {
             position: fixed;
             top: 0;
@@ -75,7 +73,6 @@
             color: var(--text-muted);
             font-weight: 500;
             font-size: 14px;
-            letter-spacing: 0.5px;
             transition: 0.3s;
         }
 
@@ -90,7 +87,7 @@
             cursor: pointer;
         }
 
-        /* Main Collection Section */
+        /* Products Grid */
         .products-section {
             padding: 130px 8% 80px;
             max-width: 1300px;
@@ -115,23 +112,20 @@
             font-size: 14px;
         }
 
-        /* Grid Layout */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 25px;
         }
 
-        /* Product Cards */
         .product-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .product-card:hover {
@@ -146,6 +140,7 @@
             border-radius: 12px;
             overflow: hidden;
             background: #20232a;
+            position: relative;
         }
 
         .product-card img {
@@ -157,6 +152,18 @@
 
         .product-card:hover img {
             transform: scale(1.05);
+        }
+
+        .view-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
         }
 
         .product-details {
@@ -173,39 +180,197 @@
         .product-desc {
             color: var(--text-muted);
             font-size: 13px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .price-tag {
             font-size: 18px;
             font-weight: 700;
             color: var(--accent-gold);
+            margin-bottom: 12px;
+        }
+
+        .quick-btn {
+            width: 100%;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .product-card:hover .quick-btn {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            max-width: 850px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 25px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--text-main);
+        }
+
+        /* Zoom Image Container */
+        .modal-img-container {
+            width: 100%;
+            height: 380px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            cursor: zoom-in;
+            background: #20232a;
+        }
+
+        .modal-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.1s ease-out;
+            transform-origin: center center;
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        .modal-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-price {
+            font-size: 22px;
+            color: var(--accent-gold);
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
-        /* WhatsApp Button */
-        .order-btn {
+        .modal-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Size Selector */
+        .size-selection {
+            margin-bottom: 20px;
+        }
+
+        .size-selection label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .size-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .size-btn {
+            background: #20232a;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .size-btn.active, .size-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .modal-order-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
             background: #25d366;
             color: #000;
             text-decoration: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: 0.3s ease;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            transition: 0.3s;
         }
 
-        .order-btn:hover {
+        .modal-order-btn:hover {
             background: #20ba5a;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
         }
 
-        /* Mobile Styles */
+        /* Responsive Styles */
         @media (max-width: 768px) {
             nav ul {
                 display: none;
@@ -242,17 +407,13 @@
                 height: 180px;
             }
 
-            .product-title {
-                font-size: 14px;
+            .modal-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
             }
 
-            .price-tag {
-                font-size: 15px;
-            }
-
-            .order-btn {
-                padding: 10px;
-                font-size: 12px;
+            .modal-img-container {
+                height: 260px;
             }
         }
     </style>
@@ -278,107 +439,196 @@
     <section class="products-section" id="services">
         <div class="section-title">
             <h2>Men's Collection</h2>
-            <p>Premium Quality Hoodies & Jackets</p>
+            <p>Click any product to view details & zoom image</p>
         </div>
 
         <div class="product-grid">
             
             <!-- Item 1 -->
-            <div class="product-card">
-                <div>
-                    <div class="img-wrapper">
-                        <img src="hoodie1.jpg.jpeg" alt="Premium Hoodie">
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-title">Premium Hoodie</h3>
-                        <p class="product-desc">Comfortable and stylish everyday wear.</p>
-                        <div class="price-tag">Rs. 1,799</div>
-                    </div>
+            <div class="product-card" onclick="openModal('Premium Hoodie', 'Rs. 1,799', 'Comfortable and stylish everyday wear crafted from premium fleece fabric.', 'hoodie1.jpg.jpeg')">
+                <div class="img-wrapper">
+                    <img src="hoodie1.jpg.jpeg" alt="Premium Hoodie">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
                 </div>
-                <a href="https://wa.me/923420604105?text=Hi%2C%20I%20want%20to%20order%20the%20Premium%20Hoodie%20(Rs.1799)." target="_blank" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Order Now
-                </a>
+                <div class="product-details">
+                    <h3 class="product-title">Premium Hoodie</h3>
+                    <p class="product-desc">Everyday comfort wear.</p>
+                    <div class="price-tag">Rs. 1,799</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
             </div>
 
             <!-- Item 2 -->
-            <div class="product-card">
-                <div>
-                    <div class="img-wrapper">
-                        <img src="hoodie2.jpg.jpeg" alt="Classic Hoodie">
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-title">Classic Hoodie</h3>
-                        <p class="product-desc">High quality fabric for winter comfort.</p>
-                        <div class="price-tag">Rs. 1,799</div>
-                    </div>
+            <div class="product-card" onclick="openModal('Classic Hoodie', 'Rs. 1,799', 'High quality fabric designed for extreme winter comfort and durability.', 'hoodie2.jpg.jpeg')">
+                <div class="img-wrapper">
+                    <img src="hoodie2.jpg.jpeg" alt="Classic Hoodie">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
                 </div>
-                <a href="https://wa.me/923420604105?text=Hi%2C%20I%20want%20to%20order%20the%20Classic%20Hoodie%20(Rs.1799)." target="_blank" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Order Now
-                </a>
+                <div class="product-details">
+                    <h3 class="product-title">Classic Hoodie</h3>
+                    <p class="product-desc">High quality winter wear.</p>
+                    <div class="price-tag">Rs. 1,799</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
             </div>
 
             <!-- Item 3 -->
-            <div class="product-card">
-                <div>
-                    <div class="img-wrapper">
-                        <img src="jacket.jpg.jpg" alt="Classic Jacket">
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-title">Classic Jacket</h3>
-                        <p class="product-desc">Modern fit premium outdoor jacket.</p>
-                        <div class="price-tag">Rs. 2,999</div>
-                    </div>
+            <div class="product-card" onclick="openModal('Classic Jacket', 'Rs. 2,999', 'Modern fit premium outdoor jacket with waterproof inner layer.', 'jacket.jpg.jpg')">
+                <div class="img-wrapper">
+                    <img src="jacket.jpg.jpg" alt="Classic Jacket">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
                 </div>
-                <a href="https://wa.me/923420604105?text=Hi%2C%20I%20want%20to%20order%20the%20Classic%20Jacket%20(Rs.2999)." target="_blank" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Order Now
-                </a>
+                <div class="product-details">
+                    <h3 class="product-title">Classic Jacket</h3>
+                    <p class="product-desc">Modern fit outdoor jacket.</p>
+                    <div class="price-tag">Rs. 2,999</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
             </div>
 
             <!-- Item 4 -->
-            <div class="product-card">
-                <div>
-                    <div class="img-wrapper">
-                        <img src="hoodie3.jpeg.jpeg" alt="Executive Hoodie">
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-title">Executive Hoodie</h3>
-                        <p class="product-desc">Heavyweight fleece fabric hoodie.</p>
-                        <div class="price-tag">Rs. 2,500</div>
-                    </div>
+            <div class="product-card" onclick="openModal('Executive Hoodie', 'Rs. 2,500', 'Heavyweight fleece fabric hoodie with executive finish.', 'hoodie3.jpeg.jpeg')">
+                <div class="img-wrapper">
+                    <img src="hoodie3.jpeg.jpeg" alt="Executive Hoodie">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
                 </div>
-                <a href="https://wa.me/923420604105?text=Hi%2C%20I%20want%20to%20order%20the%20Executive%20Hoodie%20(Rs.2500)." target="_blank" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Order Now
-                </a>
+                <div class="product-details">
+                    <h3 class="product-title">Executive Hoodie</h3>
+                    <p class="product-desc">Heavyweight fleece fabric.</p>
+                    <div class="price-tag">Rs. 2,500</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
             </div>
 
             <!-- Item 5 -->
-            <div class="product-card">
-                <div>
-                    <div class="img-wrapper">
-                        <img src="jacket2.jpg.jpg" alt="Urban Jacket">
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-title">Urban Winter Jacket</h3>
-                        <p class="product-desc">Luxury finish insulated jacket.</p>
-                        <div class="price-tag">Rs. 4,999</div>
-                    </div>
+            <div class="product-card" onclick="openModal('Urban Winter Jacket', 'Rs. 4,999', 'Luxury finish insulated winter jacket with high-grade zippers.', 'jacket2.jpg.jpg')">
+                <div class="img-wrapper">
+                    <img src="jacket2.jpg.jpg" alt="Urban Jacket">
+                    <span class="view-badge"><i class="fas fa-search-plus"></i> View</span>
                 </div>
-                <a href="https://wa.me/923420604105?text=Hi%2C%20I%20want%20to%20order%20the%20Urban%20Jacket%20(Rs.4999)." target="_blank" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Order Now
-                </a>
+                <div class="product-details">
+                    <h3 class="product-title">Urban Winter Jacket</h3>
+                    <p class="product-desc">Luxury finish insulated jacket.</p>
+                    <div class="price-tag">Rs. 4,999</div>
+                    <button class="quick-btn">View Details</button>
+                </div>
             </div>
 
         </div>
     </section>
 
+    <!-- Product Detail Modal Popup -->
+    <div class="modal-overlay" id="productModal" onclick="closeModalOnOverlay(event)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            
+            <!-- Image with Zoom -->
+            <div class="modal-img-container" id="zoomContainer" onmousemove="zoomImage(event)" onmouseleave="resetZoom()">
+                <img id="modalImg" src="" alt="Product">
+                <span class="zoom-hint"><i class="fas fa-search-plus"></i> Hover to Zoom</span>
+            </div>
+
+            <!-- Details -->
+            <div class="modal-info">
+                <h2 class="modal-title" id="modalTitle">Product Name</h2>
+                <div class="modal-price" id="modalPrice">Rs. 0</div>
+                <p class="modal-desc" id="modalDesc">Description goes here...</p>
+
+                <!-- Select Size -->
+                <div class="size-selection">
+                    <label>Select Size:</label>
+                    <div class="size-options">
+                        <button class="size-btn" onclick="selectSize(this)">S</button>
+                        <button class="size-btn active" onclick="selectSize(this)">M</button>
+                        <button class="size-btn" onclick="selectSize(this)">L</button>
+                        <button class="size-btn" onclick="selectSize(this)">XL</button>
+                    </div>
+                </div>
+
+                <a href="#" id="modalWhatsappBtn" target="_blank" class="modal-order-btn">
+                    <i class="fab fa-whatsapp"></i> Order on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         const mobileMenu = document.getElementById('mobile-menu');
         const navLinks = document.getElementById('nav-links');
+        let selectedSize = 'M';
 
         mobileMenu.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
+
+        // Open Modal Function
+        function openModal(title, price, desc, imgSrc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalPrice').innerText = price;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('modalImg').src = imgSrc;
+            
+            updateWhatsappLink(title, price, selectedSize);
+            document.getElementById('productModal').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Stop background scroll
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            resetZoom();
+        }
+
+        function closeModalOnOverlay(e) {
+            if(e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        }
+
+        // Select Size
+        function selectSize(btn) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedSize = btn.innerText;
+
+            const title = document.getElementById('modalTitle').innerText;
+            const price = document.getElementById('modalPrice').innerText;
+            updateWhatsappLink(title, price, selectedSize);
+        }
+
+        // Update WhatsApp Link with size
+        function updateWhatsappLink(title, price, size) {
+            const btn = document.getElementById('modalWhatsappBtn');
+            const message = `Hi, I want to order the ${title} (${price}) in Size: ${size}.`;
+            btn.href = `https://wa.me/923420604105?text=${encodeURIComponent(message)}`;
+        }
+
+        // Zoom Effect Functionality
+        function zoomImage(e) {
+            const container = document.getElementById('zoomContainer');
+            const img = document.getElementById('modalImg');
+            
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xPercent = (x / container.clientWidth) * 100;
+            const yPercent = (y / container.clientHeight) * 100;
+
+            img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+            img.style.transform = "scale(2)";
+        }
+
+        function resetZoom() {
+            const img = document.getElementById('modalImg');
+            img.style.transform = "scale(1)";
+            img.style.transformOrigin = "center center";
+        }
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
